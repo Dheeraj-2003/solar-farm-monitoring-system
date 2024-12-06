@@ -35,3 +35,21 @@ Retrieves sensor data for a specific solar panel, optionally filtered by a time 
 | 500         | Server error while processing the request. |
 
 ---
+## System Deployment Guide
+
+### Prerequisites
+Before deploying the system, ensure the following are installed:
+1. **Node.js** (version 14+)
+2. **MongoDB** (version 4.4+)
+3. **Kafka** (version 3.2+)
+4. **Git** (for cloning the repository)
+
+---
+
+### Deployment Steps
+
+#### 1. Clone the Repository
+Run the following commands:
+```bash
+git clone https://github.com/yourusername/solar-farm-monitoring.git
+cd solar-farm-monitoring
