@@ -1,43 +1,33 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+const connectDB = require('./db');
+const ingestRoutes = require('./api/ingest');
+const monitorRoutes = require('./api/monitor');
+const { connectKafka, runConsumer } = require('./kafka');
+
+dotenv.config();
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
-// In-memory storage for prototype
-let sensorData = [];
-
-// API to ingest data
-app.post('/api/ingest', (req, res) => {
-    const { panel_id, temperature, output, timestamp } = req.body;
-
-    // Basic validation
-    if (!panel_id || !temperature || !output || !timestamp) {
-        return res.status(400).json({ error: 'Invalid data' });
-    }
-
-    // Store data (mock database)
-    sensorData.push({ panel_id, temperature, output, timestamp });
-    console.log(`Data received: ${JSON.stringify(req.body)}`);
-    res.json({ message: 'Data ingested successfully' });
+// Connect to MongoDB
+connectDB().then(() => {
+    console.log('Database connected successfully');
+}).catch((err) => {
+    console.error('Database connection failed:', err);
+    process.exit(1);
 });
 
-// API to fetch data
-app.get('/api/monitor', (req, res) => {
-    const { panel_id } = req.query;
-
-    if (!panel_id) {
-        return res.status(400).json({ error: 'Panel ID is required' });
-    }
-
-    const data = sensorData.filter((d) => d.panel_id === panel_id);
-    res.json(data.length > 0 ? data : { message: 'No data found' });
+// Connect to Kafka and run the consumer
+connectKafka().then(() => {
+    runConsumer();
 });
 
-// Start the server
+app.use('/api/ingest', ingestRoutes);
+app.use('/api/monitor', monitorRoutes);
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
