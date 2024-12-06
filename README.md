@@ -53,3 +53,20 @@ Run the following commands:
 ```bash
 git clone https://github.com/yourusername/solar-farm-monitoring.git
 cd solar-farm-monitoring
+```
+####2. **Install Dependencies:**
+   ```bash
+npm install
+```
+####3. **Configure Environment Variables: Create a .env file**
+####4. **Kafka**
+```bash
+./bin/zookeeper-server-start.sh ./config/zookeeper.properties
+./bin/kafka-server-start.sh ./config/server.properties
+```
+####5. **Mongo**
+```bash
+mongod --dbpath /path/to/your/db
+```
+###6. Start Application
+
